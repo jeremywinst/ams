@@ -1,0 +1,323 @@
+package Child_client;
+
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import java.awt.Font;
+import java.awt.Image;
+import javax.swing.JTextField;
+import java.awt.Color;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPasswordField;
+import java.awt.Cursor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JLayeredPane;
+import java.awt.CardLayout;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
+import javax.swing.JToggleButton;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.SystemColor;
+
+public class login {	
+	private JFrame myApp;
+	private JTextField username;
+	private JLabel lblUsername;
+	private JLabel lblPassword;
+	private JPasswordField password;
+	private JButton btnLogin;
+	private JLabel heder;
+	private JLayeredPane layeredPane;
+	private JPanel pLogin;
+	private JPanel pRegis;
+	private JLabel validate;
+	
+	String ServerAddress = "localhost";
+	int ServerSocket = 8000;
+		
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					login window = new login();
+					window.myApp.setVisible(true);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		Main clos = new Main();
+		clos.cls();
+	}
+	
+	public void clos(int recv) {
+		if(recv==99) {
+			myApp.setVisible(true);
+		}
+	}
+	
+	public void enterName() {
+	}
+
+	public login() {
+		initialize();
+	}
+	
+	public void switchPanels(JPanel panel) {
+		layeredPane.removeAll();
+		layeredPane.add(panel);
+		layeredPane.repaint();
+		layeredPane.revalidate();
+	}
+	
+	public void loginning() {
+		String isr= username.getText();
+		String ipas= password.getText();								    			    
+			try {
+				Socket s = new Socket(ServerAddress,ServerSocket);
+				PrintStream send = new PrintStream(s.getOutputStream(),true);
+				send.println("login,"+isr+","+ipas+",child");
+			    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));					    
+				String m = in.readLine();
+				String[] lgn = m.split("\\,");
+				if(lgn[0].contains("true")) {
+					validate.setText("                                       Opening App ...");
+					JOptionPane.showMessageDialog(null, "Login Sucessful ");
+					Main utm = new Main();										
+					utm.setVisible(true);
+					utm.printName(isr+","+lgn[1]);
+					myApp.dispose();
+				}
+				else validate.setText("Invalid Username or Password !   /   Must Child !");		
+			} catch (IOException e1) {
+				validate.setText("Connection to Server Error!");
+			}
+	}
+
+	private void initialize() {
+		myApp = new JFrame();
+		myApp.getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 14));
+		myApp.getContentPane().setForeground(new Color(30, 144, 255));
+		Image res = new ImageIcon(this.getClass().getResource("/logo.png")).getImage();
+		myApp.setIconImage(res);
+		myApp.setTitle("Application Monitoring v1.0 - Login Page");
+		myApp.setBounds(400, 230, 546, 306);
+		myApp.setResizable(false);
+		myApp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		myApp.getContentPane().setLayout(null);
+		myApp.getContentPane().setBackground(Color.CYAN);
+		
+		heder = new JLabel("");
+		Image lgn = new ImageIcon(this.getClass().getResource("/login.png")).getImage().getScaledInstance(160,160,java.awt.Image.SCALE_SMOOTH);
+		heder.setIcon(new ImageIcon(lgn));
+		heder.setName("heder");
+		heder.setBounds(25, 13, 184, 184);
+		myApp.getContentPane().add(heder);
+		
+		JToggleButton createAcc = new JToggleButton("Create Account");		
+		createAcc.setHorizontalTextPosition(SwingConstants.RIGHT);
+		createAcc.setHorizontalAlignment(SwingConstants.LEFT);
+		createAcc.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		createAcc.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		createAcc.setBounds(31, 210, 151, 33);
+		Image crAcc = new ImageIcon(this.getClass().getResource("/crtAcc.png")).getImage().getScaledInstance(25,25,java.awt.Image.SCALE_SMOOTH);
+		Image crBck = new ImageIcon(this.getClass().getResource("/bck.png")).getImage().getScaledInstance(22,22,java.awt.Image.SCALE_SMOOTH);
+		createAcc.setIcon(new ImageIcon(crAcc));		
+		myApp.getContentPane().add(createAcc);
+		createAcc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(createAcc.isSelected()) {
+					switchPanels(pRegis);
+					createAcc.setIcon(new ImageIcon(crBck));
+					createAcc.setText("  Back to Login");
+				}
+				else {
+					switchPanels(pLogin);
+					createAcc.setIcon(new ImageIcon(crAcc));
+					createAcc.setText("Create Account");
+				}
+				
+			}
+		});
+		
+		layeredPane = new JLayeredPane();
+		layeredPane.setBounds(198, 13, 333, 249);	
+		myApp.getContentPane().add(layeredPane);
+		layeredPane.setLayout(new CardLayout(0, 0));
+		
+		pLogin = new JPanel();
+		layeredPane.add(pLogin, "name_104983072084800");
+		pLogin.setBackground(Color.cyan);
+		pLogin.setLayout(null);
+		
+		JLabel judul = new JLabel("Login");
+		judul.setBounds(16, 13, 289, 44);
+		judul.setHorizontalAlignment(SwingConstants.CENTER);
+		judul.setFont(new Font("Tahoma", Font.BOLD, 24));
+		pLogin.add(judul);
+		
+		lblUsername = new JLabel("Username");
+		lblUsername.setBounds(35, 70, 85, 22);
+		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		pLogin.add(lblUsername);
+		
+		username = new JTextField();
+		username.setBounds(145, 71, 160, 24);
+		username.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		username.setColumns(10);
+		pLogin.add(username);
+		
+		lblPassword = new JLabel("Password");
+		lblPassword.setBounds(35, 116, 85, 22);
+		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		pLogin.add(lblPassword);
+		
+		password = new JPasswordField();
+		password.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER) loginning();
+			}
+		});
+		password.setBounds(145, 117, 160, 24);
+		password.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		pLogin.add(password);
+		
+		validate = new JLabel("");
+		validate.setForeground(Color.RED);
+		validate.setBounds(35, 160, 270, 16);
+		pLogin.add(validate);
+		
+		JButton btnExit = new JButton("    Exit");
+		btnExit.setForeground(new Color(0, 0, 205));
+		btnExit.setBackground(new Color(255, 69, 0));
+		btnExit.setBounds(35, 195, 100, 33);
+		btnExit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));		
+		Image exit = new ImageIcon(this.getClass().getResource("/exitB.png")).getImage().getScaledInstance(20,20,java.awt.Image.SCALE_SMOOTH);
+		btnExit.setIcon(new ImageIcon(exit));
+		pLogin.add(btnExit);
+		btnExit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				myApp.dispose();
+			}
+		});		
+		
+		btnLogin = new JButton("Login  ");
+		btnLogin.setForeground(Color.WHITE);
+		btnLogin.setBackground(SystemColor.textHighlight);
+		btnLogin.setHorizontalTextPosition(SwingConstants.LEADING);
+		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		btnLogin.setBounds(205, 195, 100, 33);
+		Image loginIN = new ImageIcon(this.getClass().getResource("/loginIN.png")).getImage().getScaledInstance(20,25,java.awt.Image.SCALE_SMOOTH);
+		btnLogin.setIcon(new ImageIcon(loginIN));
+		btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		pLogin.add(btnLogin);
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {	
+				loginning();
+			}			
+		});
+		
+		pRegis = new JPanel();
+		layeredPane.add(pRegis, "name_104994903389000");
+		pRegis.setBackground(Color.cyan);
+		pRegis.setLayout(null);
+		
+		JLabel jdul = new JLabel("Register");
+		jdul.setBounds(22, 11, 289, 30);
+		pRegis.add(jdul);
+		jdul.setHorizontalAlignment(SwingConstants.CENTER);
+		jdul.setFont(new Font("Tahoma", Font.BOLD, 24));
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setBounds(28, 56, 85, 22);
+		pRegis.add(lblName);
+		lblName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JTextField cName = new JTextField();
+		cName.setBounds(151, 56, 160, 24);
+		pRegis.add(cName);
+		cName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cName.setColumns(10);
+		
+		JTextField cUser = new JTextField();
+		cUser.setBounds(151, 92, 160, 24);
+		pRegis.add(cUser);
+		cUser.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cUser.setColumns(10);
+		
+		JLabel label_1 = new JLabel("Username");
+		label_1.setBounds(28, 92, 85, 22);
+		pRegis.add(label_1);
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JLabel label_2 = new JLabel("Password");
+		label_2.setBounds(28, 128, 85, 22);
+		pRegis.add(label_2);
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JPasswordField cPass = new JPasswordField();
+		cPass.setBounds(151, 128, 160, 24);
+		pRegis.add(cPass);
+		cPass.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		
+		JLabel valReg = new JLabel("");
+		valReg.setForeground(Color.RED);
+		valReg.setBounds(28, 210, 177, 15);
+		pRegis.add(valReg);
+
+		JComboBox comboBox = new JComboBox();
+		comboBox.addItem("child");
+		comboBox.addItem("parent");	
+		comboBox.setBounds(151, 165, 160, 24);
+		pRegis.add(comboBox);
+		
+		JLabel lblType = new JLabel("Type");
+		lblType.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblType.setBounds(28, 165, 85, 22);
+		pRegis.add(lblType);
+		
+		JButton btnCreate = new JButton("Create ");
+		btnCreate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnCreate.setHorizontalTextPosition(SwingConstants.LEADING);
+		btnCreate.setBounds(211, 204, 100, 32);
+		Image crt = new ImageIcon(this.getClass().getResource("/plus.png")).getImage().getScaledInstance(20,20,java.awt.Image.SCALE_SMOOTH);
+		btnCreate.setIcon(new ImageIcon(crt));
+		btnCreate.setVerticalTextPosition(SwingConstants.TOP);
+		btnCreate.setVerticalAlignment(SwingConstants.BOTTOM);
+		pRegis.add(btnCreate);
+		btnCreate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String regName = cName.getText();
+				String regUser = cUser.getText();
+				String regPass = cPass.getText();
+				String regType = (String) comboBox.getSelectedItem();
+				if(!regName.equals("")&&!regUser.equals("")&&!regPass.equals("")&&!regType.equals("")) {
+					try {
+						Socket s = new Socket(ServerAddress,ServerSocket);
+						PrintStream send = new PrintStream(s.getOutputStream(),true);
+						send.println("regAcc,"+regUser+","+regPass+","+regName+","+regType);
+						valReg.setText(regName+" Successful Registered");
+					} catch (Exception rg) {
+						valReg.setText("Failed to Create Account");
+					}
+				} else valReg.setText("Fill the Blank!");
+			}
+		});
+	}
+
+}

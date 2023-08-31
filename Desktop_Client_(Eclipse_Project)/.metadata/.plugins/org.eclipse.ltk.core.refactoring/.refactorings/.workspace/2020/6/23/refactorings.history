@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;admin&apos;" deleteContents="false" description="Delete resource &apos;admin&apos;" element1="/admin" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1591285166356"/>&#x0A;<refactoring comment="Rename resource &apos;admin_gm&apos; to &apos;GameMonitoring_ADMIN&apos;" description="Rename resource &apos;admin_gm&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/admin_gm" name="GameMonitoring_ADMIN" stamp="1591441572724" updateReferences="true"/>
+</session>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands>
+	<moveEntry
+		id="org.eclipse.wb.swing.components.menu javax.swing.JMenuItem"
+		category="org.eclipse.wb.swing.components.menu"/>
+	<moveEntry
+		id="org.eclipse.wb.swing.components javax.swing.JPasswordField"
+		category="org.eclipse.wb.swing.components"
+		nextEntry="org.eclipse.wb.swing.components javax.swing.JTable"/>
+</commands>

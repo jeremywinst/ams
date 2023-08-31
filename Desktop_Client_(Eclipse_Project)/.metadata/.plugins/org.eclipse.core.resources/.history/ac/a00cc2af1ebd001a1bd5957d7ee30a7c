@@ -1,0 +1,137 @@
+package admin_gm;
+
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.awt.event.ActionEvent;
+import javax.swing.ImageIcon;
+import java.awt.Color;
+
+
+
+public class login_admin extends JFrame {
+
+	private JPanel lgn_page;
+	private JTextField username;
+	private JPasswordField password;
+	private JLabel validate;
+	
+    String ServerAddress = "localhost";
+    int ServerSocket = 8000;
+        
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					login_admin frame = new login_admin();
+					frame.setVisible(true);
+					frame.setResizable(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public void enterName() {
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	
+	public login_admin() {
+		setTitle("Administrator - Game Monitoring App");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 218);
+		Image lgo = new ImageIcon(this.getClass().getResource("/lgo.png")).getImage();
+		setIconImage(lgo);
+		lgn_page = new JPanel();
+		lgn_page.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(lgn_page);
+		lgn_page.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("");
+		Image lbl = new ImageIcon(this.getClass().getResource("/lgn.png")).getImage().getScaledInstance(90, 90, java.awt.Image.SCALE_SMOOTH);
+		lblNewLabel.setIcon(new ImageIcon(lbl));
+		lblNewLabel.setBounds(24, 14, 109, 96);
+		lgn_page.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Username");
+		lblNewLabel_1.setBounds(157, 62, 96, 16);
+		lgn_page.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("Password");
+		lblNewLabel_2.setBounds(157, 94, 96, 16);
+		lgn_page.add(lblNewLabel_2);
+		
+		username = new JTextField();
+		username.setBounds(265, 59, 116, 22);
+		lgn_page.add(username);
+		username.setColumns(10);
+		
+		JButton login = new JButton("Login");
+		login.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String isr= username.getText();
+				String ipas= password.getText();								    			    
+					try {
+						Socket s = new Socket(ServerAddress,ServerSocket);
+						PrintStream send = new PrintStream(s.getOutputStream(),true);
+						send.println("login,"+isr+","+ipas+",ADMIN");
+                                                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));					    
+						String m = in.readLine();
+						String[] lgn = m.split("\\,");
+						if(lgn[0].contains("true")) {
+							validate.setText("Opening App ...");
+							JOptionPane.showMessageDialog(null, "Login Sucessful ");
+							dispose();
+							acc_manager mbo = new acc_manager();
+							mbo.setVisible(true);
+							acc_manager accM = new acc_manager();
+							accM.printName(lgn[1]);
+						}
+						else validate.setText("Invalid Username or Password !");		
+					} catch (IOException e1) {
+						validate.setText("Connection to Server Error!");
+						}
+			}
+		});
+		login.setBounds(284, 133, 97, 25);
+		lgn_page.add(login);
+		
+		password = new JPasswordField();
+		password.setBounds(265, 91, 116, 22);
+		lgn_page.add(password);
+		
+		JLabel lblNewLabel_3 = new JLabel("Login as Admin");
+		lblNewLabel_3.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_3.setBounds(190, 13, 142, 22);
+		lgn_page.add(lblNewLabel_3);
+		
+		validate = new JLabel("");
+		validate.setForeground(Color.RED);
+		validate.setBounds(24, 137, 248, 16);
+		lgn_page.add(validate);
+	}
+}

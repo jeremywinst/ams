@@ -1,0 +1,627 @@
+package admin_gm;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import java.awt.CardLayout;
+import java.awt.Font;
+import java.awt.Image;
+
+import javax.swing.SwingConstants;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JComboBox;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.awt.event.ActionEvent;
+import java.awt.Color;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.border.BevelBorder;
+import java.awt.SystemColor;
+import javax.swing.UIManager;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import java.awt.event.MouseAdapter;
+
+public class acc_manager extends JFrame {
+
+	private JPanel admin_page;
+	private JTextField cName;
+	private JTextField cUser;
+	private JPasswordField cPass;
+	private JPasswordField cRepass;
+	private JLabel valReg;
+	private JComboBox comboBox;
+	private JLayeredPane layeredPane;
+	private JPanel createAcc;
+	private JPanel showAcc;
+	private JPanel showGame;
+	private JPanel home;
+	private JTable table;
+	private JTable table2;
+	private JTextField uPass;
+	private JTextField uName;
+	private JTextField uConn;
+	private JComboBox uType;
+	private JLabel fromUser;
+	private JLabel txt;
+	private JTextField gUsr;
+	private JTextField gRT;
+	private JTextField gST;
+	private JLabel txt2;
+	private JLabel fromGameN;
+	private JLabel nameADMIN;
+	private JComboBox interval;       
+    String nme;
+        
+	String ServerAddress = "localhost";
+	int ServerSocket = 8000;
+	private JTextField gEX;
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					acc_manager frame = new acc_manager();
+					frame.setVisible(true);
+					frame.setResizable(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		login_admin callClass = new login_admin();
+		callClass.enterName();
+	}
+	
+	public void printName(String receivedName) {
+		nameADMIN.setText(receivedName);
+	}
+	
+	public void switchPanels(JPanel panel) {
+		layeredPane.removeAll();
+		layeredPane.add(panel);
+		layeredPane.repaint();
+		layeredPane.revalidate();
+	}
+	
+	private void ShowAcc() {
+		DefaultTableModel model = new DefaultTableModel();
+		model.addColumn("Username");
+		model.addColumn("Password");
+		model.addColumn("Name");
+		model.addColumn("Type");
+		model.addColumn("conn");
+		try {
+			Socket s = new Socket(ServerAddress,ServerSocket);
+			PrintStream send = new PrintStream(s.getOutputStream(),true);
+			send.println("ADMgetTableAcc");
+		    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));	
+		    String line;
+		    while((line = in.readLine()) != null) {
+		    	if(line.trim().equals(",,,done")) break;
+				String[] mdl = line.split(",");						
+				model.addRow(new Object[] {mdl[0], mdl[1], mdl[2], mdl[3], mdl[4]});
+		    }
+			table.setModel(model);
+			table.setAutoResizeMode(0);
+			table.getColumnModel().getColumn(0).setPreferredWidth(95);
+			table.getColumnModel().getColumn(1).setPreferredWidth(95);
+			table.getColumnModel().getColumn(2).setPreferredWidth(143);	
+			table.getColumnModel().getColumn(3).setPreferredWidth(88);
+			table.getColumnModel().getColumn(4).setPreferredWidth(88);	
+		} catch(Exception t) {
+			}
+	}
+	
+	private void ShowGame() {
+		DefaultTableModel model2 = new DefaultTableModel();
+		model2.addColumn("Username");
+		model2.addColumn("Game Name");
+		model2.addColumn("Run Time");
+		model2.addColumn("Set Time");
+		model2.addColumn("Interval");
+		model2.addColumn("Expired");
+		try {
+			Socket s = new Socket(ServerAddress,ServerSocket);
+			PrintStream send = new PrintStream(s.getOutputStream(),true);
+			send.println("ADMgetTableGame");
+		    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));	
+		    String line;
+		    while((line = in.readLine()) != null) {
+		    	if(line.trim().equals(",,,,,,done")) break;
+				String[] mdl = line.split(",");						
+				model2.addRow(new Object[] {mdl[0], mdl[1], mdl[2], mdl[3], mdl[4], mdl[5]});
+		    }
+			table2.setModel(model2);
+			table2.setAutoResizeMode(0);
+			table2.getColumnModel().getColumn(0).setPreferredWidth(80);
+			table2.getColumnModel().getColumn(1).setPreferredWidth(130);
+			table2.getColumnModel().getColumn(2).setPreferredWidth(80);	
+			table2.getColumnModel().getColumn(3).setPreferredWidth(80);
+			table2.getColumnModel().getColumn(4).setPreferredWidth(69);
+			table2.getColumnModel().getColumn(5).setPreferredWidth(70);
+		} catch(Exception t) {
+			}
+	}
+	
+	/**
+	 * Create the frame.
+	 */
+	public acc_manager() {
+		setTitle("Administrator Game Monitoring");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 608, 503);
+		admin_page = new JPanel();
+		Image lgo = new ImageIcon(this.getClass().getResource("/lgo.png")).getImage();
+		setIconImage(lgo);
+		admin_page.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, Color.LIGHT_GRAY, null, Color.GRAY, null));
+		setContentPane(admin_page);
+		admin_page.setLayout(null);
+		
+		nameADMIN = new JLabel("ADMINISTRATOR");
+		nameADMIN.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+				switchPanels(home);
+			}
+		});
+		nameADMIN.setBounds(18, 39, 118, 20);
+		admin_page.add(nameADMIN);
+		
+		layeredPane = new JLayeredPane();
+		layeredPane.setBorder(new MatteBorder(4, 2, 2, 2, (Color) Color.GRAY));
+		layeredPane.setBounds(18, 80, 560, 360);
+		admin_page.add(layeredPane);
+		layeredPane.setLayout(new CardLayout(0, 0));
+		
+		home = new JPanel();
+		home.setBackground(new Color(192, 192, 192));
+		layeredPane.add(home, "name_202110795637800");
+		home.setLayout(null);
+		
+		JLabel lblNewLabel_1 = new JLabel("WELCOME");
+		lblNewLabel_1.setVerticalTextPosition(SwingConstants.TOP);
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1.setHorizontalTextPosition(SwingConstants.CENTER);
+		lblNewLabel_1.setFont(new Font("Comic Sans MS", Font.PLAIN, 38));
+		lblNewLabel_1.setBounds(154, 40, 249, 260);
+		Image wlcm = new ImageIcon(this.getClass().getResource("/wlcm.png")).getImage().getScaledInstance(180,180,java.awt.Image.SCALE_SMOOTH);
+		lblNewLabel_1.setIcon(new ImageIcon(wlcm));
+		home.add(lblNewLabel_1);
+		
+		createAcc = new JPanel();
+		layeredPane.add(createAcc, "name_193815274683000");
+		createAcc.setLayout(null);
+		
+		JButton regAcc = new JButton("Register Acc");
+		regAcc.setVerticalTextPosition(SwingConstants.BOTTOM);
+		regAcc.setHorizontalTextPosition(SwingConstants.CENTER);
+		regAcc.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		Image crt = new ImageIcon(this.getClass().getResource("/cret.png")).getImage().getScaledInstance(22,22,java.awt.Image.SCALE_SMOOTH);
+		regAcc.setIcon(new ImageIcon(crt));
+		regAcc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				switchPanels(createAcc);
+			}
+		});
+		regAcc.setBounds(190, 13, 97, 54);
+		admin_page.add(regAcc);
+		
+		JLabel label = new JLabel("Register");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setFont(new Font("Tahoma", Font.BOLD, 24));
+		label.setBounds(137, 28, 289, 30);
+		createAcc.add(label);
+		
+		JLabel label_1 = new JLabel("Name");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_1.setBounds(107, 88, 85, 22);
+		createAcc.add(label_1);
+		
+		JLabel label_2 = new JLabel("Username");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_2.setBounds(107, 124, 85, 22);
+		createAcc.add(label_2);
+		
+		cName = new JTextField();
+		cName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cName.setColumns(10);
+		cName.setBounds(298, 84, 160, 24);
+		createAcc.add(cName);
+		
+		cUser = new JTextField();
+		cUser.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cUser.setColumns(10);
+		cUser.setBounds(298, 120, 160, 24);
+		createAcc.add(cUser);
+		
+		cPass = new JPasswordField();
+		cPass.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cPass.setBounds(298, 156, 160, 24);
+		createAcc.add(cPass);
+		
+		comboBox = new JComboBox();
+		comboBox.setBounds(298, 230, 160, 24);
+		comboBox.addItem("child");
+		comboBox.addItem("parent");
+		comboBox.addItem("ADMIN");
+		comboBox.setSelectedItem(null);
+		createAcc.add(comboBox);
+		
+		JLabel lblRetypePassword = new JLabel("Retype Password");
+		lblRetypePassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblRetypePassword.setBounds(107, 197, 119, 22);
+		createAcc.add(lblRetypePassword);
+		
+		JLabel label_4 = new JLabel("Password");
+		label_4.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_4.setBounds(107, 160, 85, 22);
+		createAcc.add(label_4);
+		
+		JLabel label_5 = new JLabel("Type");
+		label_5.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label_5.setBounds(107, 232, 85, 22);
+		createAcc.add(label_5);
+		
+		cRepass = new JPasswordField();
+		cRepass.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cRepass.setBounds(298, 193, 160, 24);
+		createAcc.add(cRepass);
+		
+		JButton create = new JButton("Create Account");
+		create.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String regName = cName.getText();
+				String regUser = cUser.getText();
+				String regPass = cPass.getText();
+				String rePass = cRepass.getText();
+				String regType = (String) comboBox.getSelectedItem();
+				if(!regName.equals("")&&!regUser.equals("")&&!regPass.equals("")&&!regType.equals("")&&rePass.equals(regPass)&&comboBox!=null) {
+					try {
+						Socket s = new Socket(ServerAddress,ServerSocket);
+						PrintStream send = new PrintStream(s.getOutputStream(),true);
+						send.println("regAcc,"+regUser+","+regPass+","+regName+","+regType);
+						valReg.setText(regName+" Successful Registered");
+					} catch (Exception rg) {
+						valReg.setText("Failed to Create Account");
+					}
+				} else valReg.setText("Fill the Blank! / Check Retype Password");
+			}
+		});
+		create.setBounds(198, 282, 160, 25);
+		createAcc.add(create);
+		
+		valReg = new JLabel("");
+		valReg.setForeground(Color.RED);
+		valReg.setBounds(107, 320, 351, 16);
+		createAcc.add(valReg);
+		
+		showAcc = new JPanel();
+		layeredPane.add(showAcc, "name_193820400685000");
+		showAcc.setLayout(null);
+		
+		JButton accTab = new JButton("Acc Table");
+		accTab.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchPanels(showAcc);
+				ShowAcc();
+			}
+		});
+		accTab.setHorizontalTextPosition(SwingConstants.CENTER);
+		accTab.setVerticalTextPosition(SwingConstants.BOTTOM);
+		accTab.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		Image accT = new ImageIcon(this.getClass().getResource("/accT.png")).getImage().getScaledInstance(22,22,java.awt.Image.SCALE_SMOOTH);
+		accTab.setIcon(new ImageIcon(accT));
+		accTab.setBounds(334, 13, 97, 54);
+		admin_page.add(accTab);
+		
+		JLabel lblAccountTable = new JLabel("Account Table");
+		lblAccountTable.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAccountTable.setFont(new Font("Tahoma", Font.BOLD, 24));
+		lblAccountTable.setBounds(136, 13, 289, 30);
+		showAcc.add(lblAccountTable);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(22, 56, 512, 186);
+		showAcc.add(scrollPane);
+		
+		table = new JTable();
+		table.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		scrollPane.setViewportView(table);
+		
+		JButton getValueAccTable = new JButton("Change Data");
+		getValueAccTable.setHorizontalAlignment(SwingConstants.LEADING);
+		Image ins = new ImageIcon(this.getClass().getResource("/ins.png")).getImage().getScaledInstance(20,20,java.awt.Image.SCALE_SMOOTH);
+		getValueAccTable.setIcon(new ImageIcon(ins));
+		getValueAccTable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int tbl = table.getSelectedRow();
+				TableModel model = table.getModel();
+				txt.setText("Change data for User:");
+				fromUser.setText(model.getValueAt(tbl, 0).toString());
+				uPass.setText(model.getValueAt(tbl, 1).toString());
+				uName.setText(model.getValueAt(tbl, 2).toString());
+				uType.setSelectedItem(model.getValueAt(tbl, 3).toString());
+				uConn.setText(model.getValueAt(tbl, 4).toString());
+			}
+		});
+		getValueAccTable.setBounds(22, 255, 135, 25);
+		showAcc.add(getValueAccTable);
+		
+		uPass = new JTextField();
+		uPass.setBounds(22, 315, 116, 22);
+		showAcc.add(uPass);
+		uPass.setColumns(10);
+		
+		fromUser = new JLabel("");
+		fromUser.setBounds(300, 264, 76, 16);
+		showAcc.add(fromUser);
+		
+		JLabel lblNewLabel_3 = new JLabel("Password");
+		lblNewLabel_3.setBounds(22, 293, 84, 16);
+		showAcc.add(lblNewLabel_3);
+		
+		uName = new JTextField();
+		uName.setColumns(10);
+		uName.setBounds(150, 315, 116, 22);
+		showAcc.add(uName);
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setBounds(150, 293, 56, 16);
+		showAcc.add(lblName);
+		
+		JLabel lblType = new JLabel("Type");
+		lblType.setBounds(278, 293, 56, 16);
+		showAcc.add(lblType);
+		
+		uType = new JComboBox();
+		uType.addItem("child");
+		uType.addItem("parent");
+		uType.addItem("ADMIN");
+		uType.setSelectedItem(null);
+		uType.setBounds(278, 315, 84, 22);
+		showAcc.add(uType);
+		
+		uConn = new JTextField();
+		uConn.setBounds(374, 315, 76, 22);
+		showAcc.add(uConn);
+		uConn.setColumns(10);
+		
+		JLabel lblConn = new JLabel("conn");
+		lblConn.setBounds(374, 293, 56, 16);
+		showAcc.add(lblConn);
+		
+		JButton updtAcc = new JButton("");
+		updtAcc.setHorizontalTextPosition(SwingConstants.CENTER);
+		Image updt = new ImageIcon(this.getClass().getResource("/updt.png")).getImage().getScaledInstance(30,24,java.awt.Image.SCALE_SMOOTH);
+		updtAcc.setIcon(new ImageIcon(updt));
+		updtAcc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					String uTyp = (String) uType.getSelectedItem();
+					Socket s = new Socket(ServerAddress,ServerSocket);
+					PrintStream send = new PrintStream(s.getOutputStream(),true);
+					send.println("ADMupdateTableAcc,"+fromUser.getText()+","+uPass.getText()+","+uName.getText()+","+uTyp+","+uConn.getText());				
+				} catch (Exception rg) {
+					txt.setText("Error");
+				}
+				ShowAcc();
+				txt.setText("Successful Updated");
+				fromUser.setText("");
+				uPass.setText("");
+				uName.setText("");
+				uType.setSelectedItem(null);
+				uConn.setText("");
+			}
+		});
+		updtAcc.setBounds(462, 307, 82, 30);
+		showAcc.add(updtAcc);
+		
+		txt = new JLabel("");
+		txt.setBounds(169, 264, 135, 16);
+		showAcc.add(txt);
+		
+		JLabel delAcc = new JLabel("");
+		delAcc.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int tbl = table.getSelectedRow();
+				TableModel model = table.getModel();
+				try {
+					Socket s = new Socket(ServerAddress,ServerSocket);
+					PrintStream send = new PrintStream(s.getOutputStream(),true);
+					send.println("delUser,"+model.getValueAt(tbl, 0).toString());				
+				}
+				catch (Exception exc) {	}
+				ShowAcc();
+				txt2.setText("Successful Deleted");
+			}
+		});
+		delAcc.setHorizontalAlignment(SwingConstants.CENTER);		
+		delAcc.setBounds(493, 248, 41, 43);
+		showAcc.add(delAcc);
+		Image delT = new ImageIcon(this.getClass().getResource("/delT.png")).getImage().getScaledInstance(36,36,java.awt.Image.SCALE_SMOOTH);
+		delAcc.setIcon(new ImageIcon(delT));
+		
+		showGame = new JPanel();
+		layeredPane.add(showGame, "name_193822887129900");
+		showGame.setLayout(null);
+		
+		JButton gameTab = new JButton("Game Table");
+		gameTab.setVerticalTextPosition(SwingConstants.BOTTOM);
+		gameTab.setHorizontalTextPosition(SwingConstants.CENTER);
+		gameTab.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		Image gmT = new ImageIcon(this.getClass().getResource("/gmT.png")).getImage().getScaledInstance(22,22,java.awt.Image.SCALE_SMOOTH);
+		gameTab.setIcon(new ImageIcon(gmT));
+		gameTab.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchPanels(showGame);
+				ShowGame();
+			}
+		});
+		gameTab.setBounds(469, 13, 97, 54);
+		admin_page.add(gameTab);
+		
+		JLabel lblGameTable = new JLabel("Game Table");
+		lblGameTable.setHorizontalAlignment(SwingConstants.CENTER);
+		lblGameTable.setFont(new Font("Tahoma", Font.BOLD, 24));
+		lblGameTable.setBounds(135, 13, 289, 30);
+		showGame.add(lblGameTable);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(22, 56, 512, 186);
+		showGame.add(scrollPane_1);
+		
+		table2 = new JTable();
+		scrollPane_1.setViewportView(table2);
+		
+		JButton getValueGameT = new JButton("Change Data");
+		getValueGameT.setIcon(new ImageIcon(ins));
+		getValueGameT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int tbl2 = table2.getSelectedRow();
+				TableModel model2 = table2.getModel();			
+				txt2.setText("Change data for Game:");
+				fromGameN.setText(model2.getValueAt(tbl2, 1).toString());
+				gUsr.setText(model2.getValueAt(tbl2, 0).toString());
+				gRT.setText(model2.getValueAt(tbl2, 2).toString());
+				gST.setText(model2.getValueAt(tbl2, 3).toString());		
+				interval.setSelectedItem(model2.getValueAt(tbl2, 4).toString());	
+				gEX.setText(model2.getValueAt(tbl2, 5).toString());
+			}
+		});
+		getValueGameT.setHorizontalAlignment(SwingConstants.LEADING);
+		getValueGameT.setBounds(22, 255, 135, 25);
+		showGame.add(getValueGameT);
+		
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setBounds(22, 293, 84, 16);
+		showGame.add(lblUsername);
+		
+		gUsr = new JTextField();
+		gUsr.setColumns(10);
+		gUsr.setBounds(22, 315, 88, 22);
+		showGame.add(gUsr);
+		
+		JLabel lblRunTime = new JLabel("Run Time");
+		lblRunTime.setBounds(126, 293, 56, 16);
+		showGame.add(lblRunTime);
+		
+		gRT = new JTextField();
+		gRT.setColumns(10);
+		gRT.setBounds(126, 315, 76, 22);
+		showGame.add(gRT);
+		
+		JLabel lblSetTime = new JLabel("Set Time");
+		lblSetTime.setBounds(218, 293, 56, 16);
+		showGame.add(lblSetTime);
+		
+		gST = new JTextField();
+		gST.setColumns(10);
+		gST.setBounds(218, 315, 76, 22);
+		showGame.add(gST);
+		
+		JButton updtGame = new JButton("");
+		updtGame.setIcon(new ImageIcon(updt));
+		updtGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String intv = (String) interval.getSelectedItem();
+					Socket s = new Socket(ServerAddress,ServerSocket);
+					PrintStream send = new PrintStream(s.getOutputStream(),true);
+					send.println("ADMupdateGameList,"+gUsr.getText()+","+fromGameN.getText()+","+gRT.getText()+","+gST.getText()+","+intv+","+gEX.getText());				
+				} catch (Exception rg) {
+					txt2.setText("Error");
+				}
+				ShowGame();
+				txt2.setText("Successful Updated");
+				fromGameN.setText("");
+				gUsr.setText("");
+				gRT.setText("");
+				gST.setText("");
+				gEX.setText("");
+				interval.setSelectedItem(null);
+			}
+		});
+		updtGame.setHorizontalTextPosition(SwingConstants.CENTER);
+		updtGame.setBounds(488, 307, 56, 30);
+		showGame.add(updtGame);
+		
+		JLabel delGame = new JLabel("");
+		delGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int tbl2 = table2.getSelectedRow();
+				TableModel model2 = table2.getModel();
+				String uss = model2.getValueAt(tbl2, 0).toString();
+				String delf = model2.getValueAt(tbl2, 1).toString();
+				try {
+					Socket s = new Socket(ServerAddress,ServerSocket);
+					PrintStream send = new PrintStream(s.getOutputStream(),true);
+					send.println("delGame,"+uss+","+delf);				
+				}
+				catch (Exception exc) {	}
+				ShowGame();
+				txt2.setText("Successful Deleted");
+			}
+		});
+		delGame.setIcon(new ImageIcon(delT));
+		delGame.setHorizontalAlignment(SwingConstants.CENTER);
+		delGame.setBounds(493, 248, 41, 43);
+		showGame.add(delGame);
+		
+		txt2 = new JLabel("");
+		txt2.setBounds(172, 264, 135, 16);
+		showGame.add(txt2);
+		
+		fromGameN = new JLabel("");
+		fromGameN.setBounds(303, 264, 121, 16);
+		showGame.add(fromGameN);
+		
+		interval = new JComboBox();
+		interval.addItem("not set");
+		interval.addItem("Daily");
+		interval.addItem("Weekly");
+		interval.addItem("Montly");
+		interval.setSelectedItem(null);
+		interval.setBounds(310, 315, 76, 22);
+		showGame.add(interval);
+		
+		JLabel lblInterval = new JLabel("Interval");
+		lblInterval.setBounds(310, 293, 56, 16);
+		showGame.add(lblInterval);
+		
+		JLabel lblExpired = new JLabel("Expired");
+		lblExpired.setBounds(398, 293, 56, 16);
+		showGame.add(lblExpired);
+		
+		gEX = new JTextField();
+		gEX.setColumns(10);
+		gEX.setBounds(398, 315, 76, 22);
+		showGame.add(gEX);
+		
+		JLabel lblNewLabel = new JLabel("Logged in as :");
+		lblNewLabel.setBounds(18, 19, 90, 16);
+		admin_page.add(lblNewLabel);
+		
+	}
+}
