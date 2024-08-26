@@ -21,7 +21,7 @@ Explanation and demo video (Indonesian): https://www.youtube.com/watch?v=jONRPO9
 
 
 ## How Do They Work?
-The Game Monitoring Application is structured with three clients: the child's client (desktop app)**, the parent's client (Android app), the administrator's client (desktop app), and a server (MySQL Workbench). These clients interact seamlessly through the server acting as a mediator. Please make sure that all devices are connected to the same network.
+The Game Monitoring Application is structured with three clients: the child's client (desktop app), the parent's client (Android app), the administrator's client (desktop app), and a server (MySQL Workbench). These clients interact seamlessly through the server acting as a mediator. Please make sure that all devices are connected to the same network.
 
 **The parent's application** is designed to provide playtime duration to their child and monitor the child's gaming activities through a smartphone. 
 
